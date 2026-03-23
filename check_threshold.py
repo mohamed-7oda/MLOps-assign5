@@ -10,21 +10,19 @@ with open("model_info.txt", "r") as f:
 print(f"Checking Run ID: {run_id}")
 
 # =========================
-# Locate mlruns folder (FIXED PATH)
+# Use current directory
 # =========================
-mlruns_path = "mlruns/mlruns"  # <-- IMPORTANT FIX
+base_path = "."
 
-# Debug (optional but useful)
-print("Current directory:", os.listdir("."))
-print("Inside mlruns:", os.listdir("mlruns"))
+print("Current directory:", os.listdir(base_path))
 
 # =========================
 # Find run directory
 # =========================
 run_path = None
 
-for exp in os.listdir(mlruns_path):
-    exp_path = os.path.join(mlruns_path, exp)
+for exp in os.listdir(base_path):
+    exp_path = os.path.join(base_path, exp)
 
     if not os.path.isdir(exp_path):
         continue
@@ -36,13 +34,13 @@ for exp in os.listdir(mlruns_path):
         break
 
 if run_path is None:
-    print("Run not found in mlruns folder!")
+    print("Run not found!")
     sys.exit(1)
 
 print(f"Run path found: {run_path}")
 
 # =========================
-# Read accuracy manually
+# Read accuracy
 # =========================
 metric_file = os.path.join(run_path, "metrics", "accuracy")
 
