@@ -1,35 +1,44 @@
-import mlflow
 import os
 import sys
 
-# Set tracking URI
-mlruns_path = os.path.abspath("mlruns")
-mlflow.set_tracking_uri(f"file://{mlruns_path}")
-
-# Read Run ID
+# Read run ID
 with open("model_info.txt", "r") as f:
     run_id = f.read().strip()
 
 print(f"Checking Run ID: {run_id}")
 
-client = mlflow.tracking.MlflowClient()
+# Find experiment folder
+mlruns_path = "mlruns"
 
-# 🔥 Search ALL experiments
-found = False
-for exp in client.search_experiments():
-    try:
-        run = client.get_run(run_id)
-        found = True
-        break
-    except:
+exp_folders = os.listdir(mlruns_path)
+
+run_path = None
+
+for exp in exp_folders:
+    exp_path = os.path.join(mlruns_path, exp)
+    if not os.path.isdir(exp_path):
         continue
 
-if not found:
-    print("Run not found in any experiment!")
+    possible_run = os.path.join(exp_path, run_id)
+    if os.path.exists(possible_run):
+        run_path = possible_run
+        break
+
+if run_path is None:
+    print("Run not found in mlruns folder!")
     sys.exit(1)
 
-# Get accuracy
-accuracy = run.data.metrics.get("accuracy", 0)
+# Read accuracy manually
+metric_file = os.path.join(run_path, "metrics", "accuracy")
+
+if not os.path.exists(metric_file):
+    print("Accuracy metric not found!")
+    sys.exit(1)
+
+with open(metric_file, "r") as f:
+    lines = f.readlines()
+    accuracy = float(lines[-1].split()[-1])
+
 print(f"Model Accuracy: {accuracy}")
 
 # Threshold check
