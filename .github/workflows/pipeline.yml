@@ -10,24 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - run: |
+      - name: Install dependencies
+        run: |
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - run: python train.py
+      - name: Train model
+        run: python train.py
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload model info
+        uses: actions/upload-artifact@v4
         with:
           name: model-info
           path: model_info.txt
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload mlruns
+        uses: actions/upload-artifact@v4
         with:
           name: mlruns
           path: mlruns
@@ -38,24 +44,32 @@ jobs:
     needs: validate
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - run: |
+      - name: Install dependencies
+        run: |
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - uses: actions/download-artifact@v4
+      - name: Download model info
+        uses: actions/download-artifact@v4
         with:
           name: model-info
 
-      - uses: actions/download-artifact@v4
+      - name: Download mlruns
+        uses: actions/download-artifact@v4
         with:
           name: mlruns
 
-      - run: python check_threshold.py
+      - name: Check accuracy threshold
+        run: python check_threshold.py
 
-      - run: echo "Building Docker image for Run ID: $(cat model_info.txt)"
+      - name: Mock Docker build
+        run: |
+          echo "Building Docker image for Run ID: $(cat model_info.txt)"
