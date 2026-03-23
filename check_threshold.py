@@ -43,7 +43,7 @@ with open(metric_file, "r") as f:
 print(f"Model Accuracy: {accuracy}")
 
 # Threshold check
-threshold = 0.85
+threshold = 0.99
 
 if accuracy < threshold:
     print("Model below threshold. Failing pipeline.")
